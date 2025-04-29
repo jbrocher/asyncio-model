@@ -1,5 +1,5 @@
 from collections import deque
-from typing import Generator
+from typing import Coroutine
 
 from scheduler.future import Future
 from scheduler.task import Task
@@ -10,7 +10,7 @@ class Scheduler:
     def __init__(self):
         self._queue = deque([])
 
-    def create_task(self, coro: Generator):
+    def create_task(self, coro: Coroutine):
         task = Task(coro)
         self._schedule(task)
 
@@ -34,5 +34,5 @@ class Scheduler:
                     self._schedule(future)
                 else:
                     self._queue.appendleft(task)
-            except StopIteration as err:
-                print(err.value)
+            except StopIteration:
+                pass

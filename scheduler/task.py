@@ -1,9 +1,9 @@
-from typing import Generator
+from typing import Coroutine
 import uuid
 
 
 class Task:
-    def __init__(self, coro: Generator):
+    def __init__(self, coro: Coroutine):
         self._coro = coro
         self.id = uuid.uuid4()
         self.val = None

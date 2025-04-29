@@ -1,24 +1,28 @@
-import time
-
 from scheduler.future import Sleep
+import time
 from scheduler.scheduler import Scheduler
 
 
-def ping():
+async def sleep(n: int):
+    return await Sleep(n)
+
+
+async def ping():
     print("waiting for result before ping...")
-    result = yield Sleep(5)
+    result = await sleep(5)
     print(f"result: {result}")
     while True:
         print("ping")
         time.sleep(1)
-        yield
+        # yield control to the event loop. We cannot use (yield in a "true" coroutine)
+        await sleep(0)
 
 
-def pong():
+async def pong():
     while True:
-        print("pong")
         time.sleep(1)
-        yield
+        await sleep(0)
+        print("pong")
 
 
 if __name__ == "__main__":

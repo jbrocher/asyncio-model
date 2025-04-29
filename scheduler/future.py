@@ -12,6 +12,9 @@ class Future(TaskProtocol, metaclass=ABCMeta):
         self._result = None
         self._coro = self._run()
 
+    def __await__(self):
+        return (yield self)
+
     def add_done_callback(self, callback: Callable[[Any], None]):
         self._done_callbacks.append(callback)
 
