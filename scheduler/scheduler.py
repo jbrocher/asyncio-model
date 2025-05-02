@@ -15,7 +15,7 @@ class Scheduler:
         self._schedule(task)
 
     def _schedule(self, task: TaskProtocol):
-        self._queue.append(task)
+        self._queue.appendleft(task)
 
     def _continue(self, task):
         def callback(result):
@@ -33,6 +33,6 @@ class Scheduler:
                     future.add_done_callback(self._continue(task))
                     self._schedule(future)
                 else:
-                    self._queue.appendleft(task)
-            except StopIteration as err:
-                print(err.value)
+                    self._schedule(task)
+            except StopIteration:
+                pass
