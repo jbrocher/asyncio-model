@@ -44,7 +44,7 @@
         };
       in {
         default = env.env.overrideAttrs (old: {
-          buildInputs = [(pkgs.poetry.overrideAttrs {python = python;})];
+          buildInputs = [(pkgs.poetry.overrideAttrs {python = python;}) pkgs.asciinema pkgs.agg];
           # NIX_LD_LIBRARY_PATH =
           #   lib.makeLibraryPath [
           #   ];
