@@ -10,13 +10,16 @@ class Scheduler:
 
     def create_task(self, coro: Generator):
         task = Task(coro)
-        self._queue.append(task)
+        self._schedule(task)
 
     def run_forever(self):
         while self._queue:
             task = self._queue.pop()
             try:
                 task.run()
-                self._queue.appendleft(task)
+                self._schedule(task)
             except StopIteration as err:
                 print(err.value)
+
+    def _schedule(self, task: Task):
+        self._queue.appendleft(task)
