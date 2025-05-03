@@ -1,5 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from datetime import datetime, timedelta, timezone
+import selectors
+from socket import socket
 from typing import Any, Callable
 
 from scheduler.task_protocol import TaskProtocol
@@ -49,3 +51,35 @@ class Sleep(Future):
     def _check_result(self):
         if datetime.now(tz=timezone.utc) >= self._ready_at:
             return True
+
+
+class AcceptSocket(Future):
+    def __init__(self, sock: socket, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._select = selectors.DefaultSelector()
+        self._sock = sock
+        self._select.register(sock, selectors.EVENT_READ)
+
+    def _check_result(self):
+        # Non blocking, return currently ready evens
+        events = self._select.select(0)
+        if len(events) > 0:
+            conn, addr = self._sock.accept()  # Should be ready
+            print("accepted", conn, "from", addr)
+            conn.setblocking(False)
+            return conn
+
+
+class ReadSocket(Future):
+    def __init__(self, sock: socket, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._select = selectors.DefaultSelector()
+        self._sock = sock
+        self._select.register(sock, selectors.EVENT_READ)
+
+    def _check_result(self):
+        # Non blocking, return currently ready evens
+        events = self._select.select(0)
+        if len(events) > 0:
+            data = self._sock.recv(1000)  # Should be ready
+            return data
